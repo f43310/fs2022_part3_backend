@@ -30,22 +30,25 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/info', (request, response) => {
-  response.send(
-    `<h2>Phonebook has info for ${
-      persons.length
-    } people</h2><h2>${new Date()}</h2>`
-  )
+  Person.countDocuments({})
+    .then((count) => {
+      response.send(
+        `<h2>Phonebook has info for ${count} people</h2><h2>${new Date()}</h2>`
+      )
+    })
+    .catch((error) => next(error))
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = persons.find((person) => person.id === id)
-
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
+  Person.findById(request.params.id)
+    .then((person) => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch((error) => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
