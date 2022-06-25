@@ -48,22 +48,24 @@ app.get('/api/persons/:id', (request, response) => {
   }
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter((p) => p.id !== id)
-
-  response.status(204).end()
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndRemove(request.params.id)
+    .then((result) => {
+      console.log(result)
+      response.status(204).end()
+    })
+    .catch((error) => next(error))
 })
 
-const getRandomIntSection = (n, m) => {
-  let number1 = Math.random() * (m - n + 1)
-  let number2 = Math.floor(number1)
-  return number2 + n
-}
+// const getRandomIntSection = (n, m) => {
+//   let number1 = Math.random() * (m - n + 1)
+//   let number2 = Math.floor(number1)
+//   return number2 + n
+// }
 
-const generateId = () => {
-  return getRandomIntSection(111111, 999999)
-}
+// const generateId = () => {
+//   return getRandomIntSection(111111, 999999)
+// }
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
@@ -97,6 +99,18 @@ app.post('/api/persons', (request, response) => {
     response.json(person)
   })
 })
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
