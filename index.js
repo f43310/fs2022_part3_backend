@@ -57,15 +57,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
     .catch((error) => next(error))
 })
 
-// const getRandomIntSection = (n, m) => {
-//   let number1 = Math.random() * (m - n + 1)
-//   let number2 = Math.floor(number1)
-//   return number2 + n
-// }
-
-// const generateId = () => {
-//   return getRandomIntSection(111111, 999999)
-// }
+// app.put('/api/persons/:id')
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
