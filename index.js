@@ -9,7 +9,7 @@ const Person = require('./models/phonebook')
 app.use(express.static('build'))
 app.use(express.json())
 
-morgan.token('data', function (req, res) {
+morgan.token('data', function (req) {
   return req.method === 'POST' ? JSON.stringify(req.body) : ''
 })
 
@@ -29,7 +29,7 @@ app.get('/api/persons', (request, response) => {
   })
 })
 
-app.get('/info', (request, response) => {
+app.get('/info', (request, response, next) => {
   Person.countDocuments({})
     .then((count) => {
       response.send(
@@ -39,7 +39,7 @@ app.get('/info', (request, response) => {
     .catch((error) => next(error))
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id)
     .then((person) => {
       if (person) {
@@ -104,7 +104,7 @@ app.post('/api/persons', (request, response, next) => {
 
   person
     .save()
-    .then((savePerson) => {
+    .then(() => {
       response.json(person)
     })
     .catch((error) => next(error))
